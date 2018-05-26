@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Pedersen's Protocol</title>
+<meta charset="UTF-8">
+<meta name="description" content="Interative Schnorr Protocol Demonstration">
+<meta name="keywords" content="HTML,JavaScript,Interactive,Demo,Demonstration,Pedersen,Protocol,Commitment,Scheme,Discrete,Logarithm,Correctness,Binding,Hiding,Prime,Cyclic,Group,Theory">
+<meta name="author" content="Gregory Hill">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+	showProcessingMessages: false,
+	tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
+	});
+</script>
+<style>
+html, body {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+.wrap h1 { text-align: center; }
+.wrap .desc { text-align: center; margin-left: 0; padding: 10px; }
+.wrap p { margin-left: 50px; }
+.wrap label { margin-left: 50px; }
+.wrap h2 { margin-left: 25px; }
+.wrap h3 { margin-left: 50px; }
+.wrap input { margin-bottom: 20px; }
+.section { margin-bottom: 50px; }
+#diagram {
+    width: 80%;
+	height: 400px;
+    padding: 10px;
+    border: 2px solid black;
+    margin: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+.arrow {
+    width:100%;
+}
+.line {
+	margin-top: 8px;
+	width: 95%;
+	background: black;
+	height: 3px;
+	float: left;
+}
+.lbox {
+	width: 5%;
+	float: left;
+}
+.rbox {
+	width: 5%;
+	float: right;
+}
+.lbox div {	
+	width: 0;
+	height: 0;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	border-right: 20px solid black;
+}
+.rbox div {	
+	width: 0;
+	height: 0;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	border-left: 20px solid black;
+}
+.column {
+    float: left;
+    width: 33.33%;
+}
+.column h4 { text-align: center; }
+.column p {
+	text-align: center;
+	margin-bottom: 0px;
+}
+.full {
+	width: 100%;
+	margin: auto;
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>Pedersen's Protocol</h1>
+
+<p class="desc">The Pedersen commitment scheme is binding under the discrete logarithm assumption.</p>
+
+
+<div class="section">
+<h2>Parameter Generation</h2>
+
+<p>$GGen(1^\lambda)$ outputs $\langle p,m,g \rangle$ such that $p$ is prime, $g\in \mathbb{Z}_p^*$, $m=ord(g)$, $m$ is prime $|m| = \lambda$ bits, $m|p − 1$ and $h=g^t$, where $t \xleftarrow{r} \mathbb{Z}_m$.</p>
+
+<div class="row"><label for="prime">p =</label>
+<input id="prime" name="prime" type="number" value="7" onchange="update()"/></div>
+<div class="row"><label for="gen">g =</label>
+<input id="gen" name="gen" type="number" value="3" onchange="update()"/></div>
+<div class="row"><label for="tee">t =</label>
+<input id="tee" name="tee" type="number" value="1" onchange="update()"/>
+<button onclick="generate('tee')">Generate</button></div>
+<div class="row"><label for="proof">h =</label>
+<output id="proof" name="proof"></output></div>
+</div><!-- section end -->
+
+
+<div class="section">
+<h2>Commit Stage</h2>
+
+<p>Alice checks that $p$ and $m$ are primes, that $m | p -1$ and that $g^m = h^m = 1$. She selects $r \xleftarrow{r} \mathbb{Z}_m$ and her message $M\in\mathbb{Z}_m$.</p>
+
+<div class="row"><label for="rev">r =</label>
+<input id="rev" name="rev" type="number" value="4" onchange="update()"/>
+<button onclick="generate('rev')">Generate</button></div>
+<div class="row"><label for="msg">M =</label>
+<input id="msg" name="msg" type="number" value="5" onchange="update()"/>
+<button onclick="generate('msg')">Generate</button></div>
+
+<p>The commitment $c=g^r h^M$ is then sent to Bob</p>
+<label for="com">c =</label>
+<output id="com" name="com"></output>
+</div><!-- section end -->
+
+
+<div class="section">
+<h2>Open Stage</h2>
+<p>Alice sends the revelation $r$ and her message $M$ to Bob who verifies using the condition: if $c=g^r h^M$ then 1 else 0.</p>
+</div><!-- section end -->
+</div><!-- wrap end -->
+
+<h1 style="text-align: center;">Demo</h1>
+<div id="diagram">
+	<div class="row">
+		<div class="column">
+			<h4>Alice</h4>
+			<p id="choose-t">$t \xleftarrow{r} \mathbb{Z}_m$</p>
+			<p id="choose-h">$h=g^t \; mod \; p$</p>
+			<p id="choose-c">$c=g^r h^M$</p>
+		</div>
+
+		<div class="column">
+
+			<p id="params">$\langle\langle p,m,g \rangle, h \rangle$</p>
+
+			<br><br><br><br><br><br>
+
+			<div class="arrow">
+			<p id="send-c">c</p>
+			<div class="line"></div>
+			<div class="rbox"><div></div></div>
+			</div>
+
+			<br><br>
+
+			<div class="arrow">
+			<p id="send-rm">r, M</p>
+			<div class="line"></div>
+			<div class="rbox"><div></div></div>
+			</div>
+
+		</div>
+
+		<div class="column">
+			<h4>Bob</h4>
+			<br><br><br><br><br><br>
+			<br><br><br><br><br><br>
+			<p id="compare">$c = g^r h^M$</p>
+			<p id="result"></p>
+		</div>
+	</div>
+</div>
+
+<div class="full"><button onclick="calculate()">Compute</button></div>
+<br><br><br>
+
+
+<script>
+function generate(location) {
+	var m = parseInt(document.getElementById("prime").value)-1;
+	var v = Math.floor((Math.random() * m) + 1)
+	document.getElementById(location).value = v;
+	update();
+}
+
+function update() {
+	var g = parseInt(document.getElementById("gen").value);
+	var p = parseInt(document.getElementById("prime").value);
+	var t = parseInt(document.getElementById("tee").value);
+	var h = Math.pow(g,t)%p;
+    document.getElementById("proof").value = h;
+
+	var r = parseInt(document.getElementById("rev").value);
+	var M = parseInt(document.getElementById("msg").value);
+	var c = (Math.pow(g,r)*Math.pow(h,M))%p;
+	document.getElementById("com").value = c;
+}
+
+// verify
+function calculate() {
+
+	var t = parseInt(document.getElementById("tee").value);
+	var m = parseInt(document.getElementById("prime").value)-1;
+	var g = parseInt(document.getElementById("gen").value);
+	var r = parseInt(document.getElementById("rev").value);
+	var p = parseInt(document.getElementById("prime").value);
+    var h = parseInt(document.getElementById("proof").value);
+	var c = parseInt(document.getElementById("com").value);
+	var M = parseInt(document.getElementById("msg").value);
+
+	document.getElementById("params").innerHTML = "$\\langle\\langle "+p+","+m+","+g+" \\rangle, "+h+" \\rangle$";
+
+	document.getElementById("choose-t").innerHTML = "$"+t+" \\xleftarrow{r} \\mathbb{Z}\_{"+m+"}$";
+	document.getElementById("choose-h").innerHTML = "$"+h+"="+g+"^{"+t+"} \\; mod \\; "+p+"$";
+	document.getElementById("choose-c").innerHTML = "$"+c+"="+g+"^{"+r+"}\\cdot"+h+"^{"+M+"} \\; mod \\; "+p+"$";
+	
+	document.getElementById("send-c").innerHTML = c;
+	document.getElementById("send-rm").innerHTML = r+", "+M;
+
+	document.getElementById("compare").innerHTML = "$"+c+"="+g+"^{"+r+"}\\cdot"+h+"^{"+M+"} \\; mod \\; "+p+"$";
+
+	var result = (Math.pow(g,r)*Math.pow(h,M))%p;
+
+	if (c==result) document.getElementById("result").innerHTML = "<font color='green'>Valid</font>";
+	else document.getElementById("result").innerHTML = "<font color='red'>Invalid</font>";
+
+	MathJax.Hub.Queue(['Typeset', MathJax.Hub, document.getElementById("diagram")]);
+}
+
+window.addEventListener('load', function () {
+	update();
+}, false);
+
+</script>
+
+</body>
+</html> 
+
